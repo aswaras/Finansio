@@ -735,8 +735,12 @@
             showLoader("Menyiapkan Dokumen...");
             
             const element = document.getElementById('invoice-template');
-            const filename = `Nota_${n.customer.replace(/\s+/g, '_')}_${n.id}.pdf`;
+            const wrapper = document.getElementById('invoice-wrapper');
             
+            // 1. Reset Scale sementera agar hasil PDF resolusi tinggi (Kertas A4 Orisinal)
+            element.style.transform = 'none';
+
+            const filename = `Nota_${n.customer.replace(/\s+/g, '_')}_${n.id}.pdf`;
             const opt = { margin: 0, filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
 
             try {
@@ -759,6 +763,12 @@
             } catch (err) {
                 console.log("Share dibatalkan atau error", err);
             } finally {
+                // 2. Kembalikan Scale Zoom-out layar HP setelah PDF beres dibuat
+                const screenWidth = window.innerWidth;
+                if (screenWidth < 850) {
+                    const scaleValue = (screenWidth - 32) / 800;
+                    element.style.transform = `scale(${scaleValue})`;
+                }
                 hideLoader();
             }
         }
