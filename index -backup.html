@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finanzo - Smart Finance</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- PWA Meta Tags (Membuat Aplikasi bisa di-install) -->
     <meta name="theme-color" content="#2563eb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,8 +14,11 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%232563eb'/%3E%3Cpath d='M150 256 l50 50 l150 -150' stroke='%23fff' stroke-width='40' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Finanzo%20App%22,%22short_name%22:%22Finanzo%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f8fafc%22,%22theme_color%22:%22%232563eb%22,%22icons%22:[{%22src%22:%22data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='100'%20fill='%232563eb'/%3E%3Cpath%20d='M150%20256%20l50%2050%20l150%20-150'%20stroke='%23fff'%20stroke-width='40'%20fill='none'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22}]}">
 
+    <!-- Tailwind CSS untuk Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- HTML2PDF & SheetJS untuk Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -30,7 +33,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .btn-bounce:active { transform: scale(0.95); transition: transform 0.1s; }
         
-        /* PERBAIKAN: Kode CSS #invoice-wrapper yang menyembunyikan nota ke luar layar telah dihapus */
+        /*#invoice-wrapper { position: absolute; left: -9999px; top: -9999px; }*/
         #invoice-template { width: 800px; padding: 40px; background: white; color: black; }
         
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -48,7 +51,7 @@
     <!-- MAIN APP CONTAINER -->
     <div id="app" class="max-w-md mx-auto relative hidden">
         
-        <!-- HEADER -->
+        <!-- HEADER (HANYA TAMPIL DI BERANDA) -->
         <header id="main-header" class="p-6 flex justify-between items-center sticky top-0 bg-inherit z-10">
             <div>
                 <p class="text-sm text-gray-500" id="greeting">Selamat Datang,</p>
@@ -61,6 +64,7 @@
             </div>
         </header>
         
+        <!-- HEADER SIMPLE UNTUK HALAMAN LAIN -->
         <header id="simple-header" class="p-6 flex justify-between items-center sticky top-0 bg-inherit z-10 hidden">
              <h1 class="text-xl font-bold" id="simple-header-title">Judul</h1>
              <button onclick="toggleTheme()" class="p-2 rounded-full glass-card btn-bounce shadow-sm">
@@ -101,7 +105,7 @@
                     </button>
                 </div>
 
-                <!-- Recent Activity -->
+                <!-- Recent Activity List -->
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold">5 Nota Terbaru</h3>
@@ -114,17 +118,20 @@
             <!-- CATAT VIEW -->
             <section id="view-catat" class="view hidden space-y-4">
                 <div class="flex justify-between items-center pb-2 relative z-20">
+                    <!-- Tab Filter Mungil -->
                     <div class="flex bg-gray-100 dark:bg-slate-800 p-1 rounded-xl">
                         <button onclick="setFilterType('all')" id="tab-all" class="px-3 py-1.5 text-[10px] font-bold rounded-lg bg-white dark:bg-slate-700 text-blue-600 shadow-sm transition-all">Semua</button>
                         <button onclick="setFilterType('masuk')" id="tab-masuk" class="px-3 py-1.5 text-[10px] font-bold rounded-lg text-gray-500 transition-all">Masuk</button>
                         <button onclick="setFilterType('keluar')" id="tab-keluar" class="px-3 py-1.5 text-[10px] font-bold rounded-lg text-gray-500 transition-all">Keluar</button>
                     </div>
 
+                    <!-- Clean Icons untuk Filter dan Export -->
                     <div class="flex gap-1 relative">
                         <button onclick="toggleSearch()" class="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full"><i data-lucide="search" class="w-4 h-4"></i></button>
                         <button onclick="toggleDateFilter()" class="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i></button>
                         <button onclick="toggleExportMenu()" class="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-full"><i data-lucide="sheet" class="w-4 h-4"></i></button>
                         
+                        <!-- Export Dropdown Menu -->
                         <div id="export-menu" class="hidden absolute right-0 top-10 w-40 bg-white dark:bg-slate-800 shadow-xl border dark:border-gray-700 rounded-xl z-50 overflow-hidden">
                             <button onclick="exportExcel('month')" class="w-full text-left px-4 py-3 text-xs border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700">Laporan Bulan Ini</button>
                             <button onclick="exportExcel('year')" class="w-full text-left px-4 py-3 text-xs border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700">Laporan Tahun Ini</button>
@@ -133,6 +140,7 @@
                     </div>
                 </div>
 
+                <!-- Hidden Input Fields -->
                 <div id="search-container" class="hidden animate-slide-up">
                     <input type="text" id="search-catat" placeholder="Ketik keterangan catatan..." class="w-full bg-white dark:bg-slate-800 border dark:border-gray-700 p-3 rounded-xl text-xs outline-none focus:border-blue-500 transition-all shadow-sm">
                 </div>
@@ -148,10 +156,13 @@
                     </div>
                 </div>
 
+                <!-- Tabel Catatan -->
                 <div class="glass-card rounded-2xl p-2 overflow-hidden">
                     <div class="overflow-x-auto no-scrollbar">
                         <table class="w-full text-left text-sm">
-                            <tbody id="table-catat-body" class="divide-y divide-gray-100 dark:divide-gray-800"></tbody>
+                            <tbody id="table-catat-body" class="divide-y divide-gray-100 dark:divide-gray-800">
+                                <!-- Dynamic rows -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -239,6 +250,7 @@
                     <label class="text-xs text-gray-500 ml-1">Nominal</label>
                     <div class="relative mt-1">
                         <span class="absolute left-4 top-4 font-bold text-gray-400">Rp</span>
+                        <!-- Menggunakan input type text dengan inputmode numeric agar formatting real-time berjalan -->
                         <input type="text" inputmode="numeric" id="form-catat-amount" placeholder="0" oninput="formatRupiahRealtime(this)" class="w-full p-4 pl-12 bg-gray-100 dark:bg-slate-800 rounded-2xl outline-none font-bold text-xl">
                     </div>
                 </div>
@@ -316,16 +328,15 @@
     </div>
 
     <!-- INVOICE TEMPLATE & FULLSCREEN VIEW -->
-    <div id="nota-fullscreen-view" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex-col overflow-y-auto">
-        <div class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 border-b dark:border-gray-800 text-black dark:text-white sticky top-0 z-20 shadow-sm">
+    <div id="nota-fullscreen-view" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] flex flex-col hidden">
         <div class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 border-b dark:border-gray-800 text-black dark:text-white sticky top-0 z-20">
             <button onclick="closeNotaView()" class="p-2 bg-gray-100 dark:bg-slate-800 rounded-full"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
             <h3 class="font-bold text-sm">Preview Nota</h3>
             <button onclick="shareNotaPDF()" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md"><i data-lucide="send" class="w-4 h-4"></i> Kirim</button>
         </div>
-        <div class="flex-1 overflow-x-hidden overflow-y-auto p-4 flex justify-center items-start">
-            <div id="invoice-wrapper" class="w-full flex justify-center mt-2" style="transform: scale(min(1, calc((100vw - 32px) / 800))); transform-origin: top center;">
-                <div id="invoice-template" class="shadow-2xl bg-white">
+        <div class="flex-1 overflow-auto p-4 flex justify-center items-start">
+            <div id="invoice-wrapper" class="relative inset-0 w-auto">
+                <div id="invoice-template" class="shadow-2xl scale-[0.8] sm:scale-100 origin-top bg-white">
                     <div class="flex justify-between items-start border-b-4 border-blue-600 pb-8">
                         <div><h1 id="inv-shop-name" class="text-4xl font-black text-blue-600 uppercase">NAMA TOKO</h1><p id="inv-shop-address" class="text-gray-600 w-64 mt-2 whitespace-pre-line">Alamat Toko</p></div>
                         <div class="text-right"><h2 class="text-3xl font-black text-gray-800 uppercase tracking-widest">Invoice</h2><p id="inv-number" class="text-gray-500 font-mono mt-1">#INV-000</p><p id="inv-date" class="mt-4 text-sm font-bold text-gray-600"></p></div>
@@ -695,9 +706,7 @@
 
         function previewInvoice(n) {
             currentNotaObj = n;
-            const modalView = document.getElementById('nota-fullscreen-view');
-            modalView.classList.remove('hidden');
-            modalView.classList.add('flex');
+            document.getElementById('nota-fullscreen-view').classList.remove('hidden');
             
             document.getElementById('inv-shop-name').innerText = state.user.shop || 'TOKO';
             document.getElementById('inv-shop-address').innerText = state.user.address;
@@ -722,11 +731,7 @@
             `).join('');
         }
 
-        function closeNotaView() { 
-            const modalView = document.getElementById('nota-fullscreen-view');
-            modalView.classList.add('hidden'); 
-            modalView.classList.remove('flex');
-        }
+        function closeNotaView() { document.getElementById('nota-fullscreen-view').classList.add('hidden'); }
 
         async function shareNotaPDF() {
             if(!currentNotaObj) return;
@@ -899,12 +904,16 @@
         let deferredPrompt;
         const pwaCard = document.getElementById('pwa-card');
 
+        // Check jika aplikasi sudah di-install atau dibuka via mode standalone
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://');
 
         if (!isStandalone) {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            // Tampilkan tombol untuk pengguna iPhone/iPad (Panduan Manual Apple)
             if (isIOS) pwaCard.classList.remove('hidden');
 
+            // Tangkap Event Install otomatis untuk Android (Chrome/Edge)
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
@@ -922,6 +931,8 @@
                 alert('Pemasangan otomatis saat ini diblokir browser. Gunakan menu browser (titik tiga ⋮) lalu pilih "Tambahkan ke Layar Utama".');
                 return;
             }
+            
+            // Munculkan popup instalasi Native Android
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === 'accepted') pwaCard.classList.add('hidden');
@@ -964,9 +975,10 @@
                 } catch(err) { alert("File tidak valid."); }
             };
             if(e.target.files[0]) reader.readAsText(e.target.files[0]);
-            e.target.value = '';
+            e.target.value = ''; // Reset input agar bisa import file yang sama jika gagal
         }
 
+        // Jalankan saat aplikasi dimulai
         window.onload = loadData;
     </script>
 </body>
