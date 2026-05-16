@@ -316,15 +316,16 @@
     </div>
 
     <!-- INVOICE TEMPLATE & FULLSCREEN VIEW -->
-    <div id="nota-fullscreen-view" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex-col overflow-y-auto">
-        <div class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 border-b dark:border-gray-800 text-black dark:text-white sticky top-0 z-20 shadow-sm">
-        <div class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 border-b dark:border-gray-800 text-black dark:text-white sticky top-0 z-20">
-            <button onclick="closeNotaView()" class="p-2 bg-gray-100 dark:bg-slate-800 rounded-full"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
-            <h3 class="font-bold text-sm">Preview Nota</h3>
-            <button onclick="shareNotaPDF()" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md"><i data-lucide="send" class="w-4 h-4"></i> Kirim</button>
+    <div id="nota-fullscreen-view" class="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-[60] hidden flex-col">
+        <!-- Sticky Action Bar -->
+        <div class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 border-b dark:border-gray-800 text-black dark:text-white shrink-0 z-20 shadow-sm">
+            <button onclick="closeNotaView()" class="flex items-center gap-2 text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-4 py-2 rounded-xl font-bold text-sm btn-bounce"><i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali</button>
+            <button onclick="shareNotaPDF()" class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md btn-bounce"><i data-lucide="send" class="w-4 h-4"></i> Kirim PDF</button>
         </div>
-        <div class="flex-1 overflow-x-hidden overflow-y-auto p-4 flex justify-center items-start">
-            <div id="invoice-wrapper" class="w-full flex justify-center mt-2" style="transform: scale(min(1, calc((100vw - 32px) / 800))); transform-origin: top center;">
+        
+        <!-- Scrollable A4 Canvas Area -->
+        <div class="flex-1 overflow-auto p-4 md:p-8 flex justify-center items-start">
+            <div id="invoice-wrapper" class="shrink-0 my-2">
                 <div id="invoice-template" class="shadow-2xl bg-white">
                     <div class="flex justify-between items-start border-b-4 border-blue-600 pb-8">
                         <div><h1 id="inv-shop-name" class="text-4xl font-black text-blue-600 uppercase">NAMA TOKO</h1><p id="inv-shop-address" class="text-gray-600 w-64 mt-2 whitespace-pre-line">Alamat Toko</p></div>
