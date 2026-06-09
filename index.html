@@ -13,6 +13,10 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s ease, color 0.3s ease; }
+        html.dark body, body.dark { background-color: #0f172a; color: #f8fafc; }
+        html.dark * { color: #f8fafc; }
+        html.dark input, html.dark textarea, html.dark select { background-color: #1e293b !important; color: #f8fafc !important; border-color: #334155 !important; }
+        html.dark .glass-card { background: rgba(15, 23, 42, 0.9) !important; }
         .dark { background-color: #0f172a; color: #f8fafc; }
         .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
         .dark .glass-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
@@ -38,9 +42,9 @@
 </head>
 <body class="bg-gray-50 min-h-screen pb-24 overflow-x-hidden">
 
-    <div id="global-loader" class="fixed bottom-28 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col items-center justify-center text-white hidden">
-        <div class="bg-blue-600 rounded-full p-4 shadow-lg shadow-blue-400">
-            <i data-lucide="loader-2" class="w-6 h-6 animate-spin text-white"></i>
+    <div id="global-loader" class="fixed top-4 right-4 z-[100] flex items-center justify-center hidden">
+        <div class="bg-blue-600 rounded-full p-2 shadow-lg shadow-blue-400">
+            <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-white"></i>
         </div>
     </div>
 
@@ -69,10 +73,10 @@
         <main id="view-container" class="px-6">
             
             <section id="view-home" class="view space-y-6">
-                <!-- Saldo Card -->
+                <!-- Omset Card -->
                 <div class="bg-blue-600 rounded-3xl p-6 text-white shadow-xl shadow-blue-200 dark:shadow-none relative overflow-hidden" id="card-saldo">
                     <div class="relative z-10">
-                        <p class="opacity-80 text-sm">Total Saldo (Pemasukan - Pengeluaran)</p>
+                        <p class="opacity-80 text-sm">Total Omset Bulan Ini</p>
                         <h2 class="text-3xl font-bold mt-1" id="total-balance">Rp 0</h2>
                         <div class="mt-6 flex justify-between gap-4">
                             <div><p class="text-xs opacity-70 italic">Total Pesanan</p><p class="font-semibold" id="total-orders">0 Nota</p></div>
@@ -181,6 +185,13 @@
                         </div>
                     </div>
                     
+                    <div class="pt-4 border-t dark:border-gray-800">
+                        <label class="block text-xs font-semibold text-gray-500 mb-2 uppercase">Export Data</label>
+                        <button onclick="exportAllDataExcel()" class="w-full p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors">
+                            <i data-lucide="download" class="w-4 h-4"></i> Export Semua Data ke Excel
+                        </button>
+                    </div>
+                    
                     <button id="btn-install-pwa" onclick="installPWA()" class="w-full p-3 bg-green-50 dark:bg-green-900/30 text-green-600 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hidden">
                         <i data-lucide="download" class="w-4 h-4"></i> Install Aplikasi ke HP
                     </button>
@@ -251,12 +262,12 @@
             
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="nota-customer" placeholder="Nama Pelanggan" class="w-full p-3 bg-gray-100 dark:bg-slate-800 rounded-xl outline-none text-sm border border-transparent focus:border-blue-500 text-gray-800 dark:text-white">
-                    <input type="text" inputmode="numeric" id="nota-phone" placeholder="No. HP" class="w-full p-3 bg-gray-100 dark:bg-slate-800 rounded-xl outline-none text-sm border border-transparent focus:border-blue-500 text-gray-800 dark:text-white">
+                    <input type="text" id="nota-customer" placeholder="Nama Pelanggan" class="w-full p-3 bg-white dark:bg-slate-800 rounded-xl outline-none text-sm border border-gray-200 dark:border-gray-700 focus:border-blue-500 text-gray-800 dark:text-white">
+                    <input type="text" inputmode="numeric" id="nota-phone" placeholder="No. HP" class="w-full p-3 bg-white dark:bg-slate-800 rounded-xl outline-none text-sm border border-gray-200 dark:border-gray-700 focus:border-blue-500 text-gray-800 dark:text-white">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="text-[10px] text-gray-500 ml-1">Tgl Buat</label><input type="date" id="nota-date" class="w-full p-3 bg-gray-100 dark:bg-slate-800 rounded-xl outline-none text-sm border border-transparent focus:border-blue-500 text-gray-800 dark:text-white"></div>
-                    <div><label class="text-[10px] text-gray-500 ml-1">Tgl Deadline</label><input type="date" id="nota-deadline" class="w-full p-3 bg-gray-100 dark:bg-slate-800 rounded-xl outline-none text-sm border border-transparent focus:border-blue-500 text-gray-800 dark:text-white"></div>
+                    <div><label class="text-[10px] text-gray-500 ml-1">Tgl Buat</label><input type="date" id="nota-date" class="w-full p-3 bg-white dark:bg-slate-800 rounded-xl outline-none text-sm border border-gray-200 dark:border-gray-700 focus:border-blue-500 text-gray-800 dark:text-white"></div>
+                    <div><label class="text-[10px] text-gray-500 ml-1">Tgl Deadline</label><input type="date" id="nota-deadline" class="w-full p-3 bg-white dark:bg-slate-800 rounded-xl outline-none text-sm border border-gray-200 dark:border-gray-700 focus:border-blue-500 text-gray-800 dark:text-white"></div>
                 </div>
                 
                 <div class="border-t dark:border-gray-800 pt-4">
@@ -270,7 +281,7 @@
                         <label class="text-[10px] text-gray-500 uppercase font-bold">DP / Dibayar</label>
                         <div class="relative mt-1">
                             <span class="absolute left-3 top-3 text-sm text-gray-400">Rp</span>
-                            <input type="text" inputmode="numeric" id="nota-dp" placeholder="0" oninput="formatRupiahRealtime(this); calcNota()" class="w-full p-3 pl-8 bg-gray-100 dark:bg-slate-800 rounded-xl font-bold text-sm outline-none border border-transparent focus:border-blue-500 text-gray-800 dark:text-white">
+                            <input type="text" inputmode="numeric" id="nota-dp" placeholder="0" oninput="formatRupiahRealtime(this); calcNota()" class="w-full p-3 pl-8 bg-white dark:bg-slate-800 rounded-xl font-bold text-sm outline-none border border-gray-200 dark:border-gray-700 focus:border-blue-500 text-gray-800 dark:text-white">
                         </div>
                     </div>
                     <div class="flex flex-col justify-end items-end">
@@ -349,8 +360,20 @@
                         </div>
                     </div>
 
-                    <div id="inv-table-body" class="space-y-4">
-                        <!-- Items generated via JS -->
+                    <div id="inv-table-body" class="mt-8">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="border-b-2 border-gray-800">
+                                    <th class="py-3 px-2 text-left text-sm font-bold text-gray-800">Item & Deskripsi</th>
+                                    <th class="py-3 px-2 text-center text-sm font-bold text-gray-800 w-12">Qty</th>
+                                    <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-24">Harga</th>
+                                    <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-24">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <!-- Items generated via JS -->
+                            </tbody>
+                        </table>
                     </div>
 
                     <div class="mt-8 flex justify-end">
@@ -486,10 +509,14 @@
             const icon1 = document.getElementById('theme-icon');
             const icon2 = document.getElementById('simple-theme-icon');
             if(state.theme === 'dark') {
+                document.documentElement.classList.add('dark');
                 document.body.classList.add('dark');
+                document.getElementById('app').classList.add('dark');
                 icon1.setAttribute('data-lucide', 'sun'); icon2.setAttribute('data-lucide', 'sun');
             } else {
+                document.documentElement.classList.remove('dark');
                 document.body.classList.remove('dark');
+                document.getElementById('app').classList.remove('dark');
                 icon1.setAttribute('data-lucide', 'moon'); icon2.setAttribute('data-lucide', 'moon');
             }
             if(state.user.color) {
@@ -762,28 +789,31 @@
             document.getElementById('inv-footer').innerText = state.user.footer;
 
             // Render Items
-            document.getElementById('inv-table-body').innerHTML = n.items.map(i => `
-                <div class="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-b-0">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm text-gray-800">${i.name}</p>
-                        ${i.description ? `<p class="text-xs text-gray-500 italic mt-1">${i.description}</p>` : ''}
-                    </div>
-                    <div class="text-right shrink-0 min-w-[120px]">
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-600">Qty:</span>
-                            <span class="font-semibold text-gray-800">${formatNumber(i.qty)}</span>
-                        </div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-600">Harga:</span>
-                            <span class="font-semibold text-gray-800">Rp ${formatNumber(i.price)}</span>
-                        </div>
-                        <div class="flex justify-between text-sm pt-1 border-t border-gray-200">
-                            <span class="font-bold text-gray-800">Total:</span>
-                            <span class="font-black text-blue-600">Rp ${formatNumber(i.qty * i.price)}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            document.getElementById('inv-table-body').innerHTML = `
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-gray-800">
+                            <th class="py-3 px-2 text-left text-sm font-bold text-gray-800">Item & Deskripsi</th>
+                            <th class="py-3 px-2 text-center text-sm font-bold text-gray-800 w-12">Qty</th>
+                            <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-24">Harga</th>
+                            <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-24">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        ${n.items.map(i => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-2">
+                                    <p class="font-bold text-sm text-gray-800">${i.name}</p>
+                                    ${i.description ? `<p class="text-xs text-gray-500 italic mt-1">${i.description}</p>` : ''}
+                                </td>
+                                <td class="py-4 px-2 text-center text-sm font-semibold text-gray-800">${formatNumber(i.qty)}</td>
+                                <td class="py-4 px-2 text-right text-sm text-gray-800">Rp ${formatNumber(i.price)}</td>
+                                <td class="py-4 px-2 text-right text-sm font-bold text-blue-600">Rp ${formatNumber(i.qty * i.price)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
 
             // Auto-fit to screen saat pertama kali dibuka
             setTimeout(() => setZoom('fit'), 50);
@@ -855,7 +885,15 @@
 
             const totalIn = state.records.filter(r => r.type === 'masuk').reduce((acc, curr) => acc + curr.amount, 0);
             const totalOut = state.records.filter(r => r.type === 'keluar').reduce((acc, curr) => acc + curr.amount, 0);
-            document.getElementById('total-balance').innerText = `Rp ${formatNumber(totalIn - totalOut)}`;
+            
+            // Hitung omset bulan ini dari total nota
+            const now = new Date();
+            const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+            const currentYear = now.getFullYear().toString();
+            const thisMonthNotas = state.notas.filter(n => n.date.startsWith(`${currentYear}-${currentMonth}`));
+            const totalOmset = thisMonthNotas.reduce((acc, n) => acc + n.total, 0);
+            
+            document.getElementById('total-balance').innerText = `Rp ${formatNumber(totalOmset)}`;
             document.getElementById('total-orders').innerText = `${state.notas.length} Nota`;
             
             const totalQty = state.notas.reduce((acc, nota) => acc + nota.items.reduce((a, b) => a + b.qty, 0), 0);
@@ -993,6 +1031,59 @@
             const data = dataToExport.map(r => ({ ID: r.id, Tanggal: r.date, Tipe: r.type, Nominal: r.amount, Keterangan: r.note }));
             const ws = XLSX.utils.json_to_sheet(data);
             XLSX.writeFile(XLSX.utils.book_append_sheet(XLSX.utils.book_new(), ws, "Laporan"), `Laporan_Keuangan_${mode}.xlsx`);
+        }
+
+        function exportAllDataExcel() {
+            showLoader("Menyiapkan Export...");
+            setTimeout(() => {
+                const wb = XLSX.utils.book_new();
+                
+                // Sheet 1: Catatan
+                const recordsData = state.records.map(r => ({
+                    ID: r.id,
+                    Tanggal: r.date,
+                    Tipe: r.type,
+                    Nominal: r.amount,
+                    Keterangan: r.note
+                }));
+                const ws1 = XLSX.utils.json_to_sheet(recordsData);
+                XLSX.utils.book_append_sheet(wb, ws1, "Catatan");
+                
+                // Sheet 2: Nota
+                const notasData = state.notas.map(n => ({
+                    ID: n.id,
+                    Pelanggan: n.customer,
+                    "No HP": n.phone,
+                    Tanggal: n.date,
+                    Deadline: n.deadline,
+                    "Total Bayar": n.total,
+                    "DP": n.dp,
+                    "Sisa": n.total - n.dp
+                }));
+                const ws2 = XLSX.utils.json_to_sheet(notasData);
+                XLSX.utils.book_append_sheet(wb, ws2, "Nota");
+                
+                // Sheet 3: Detail Items
+                const itemsData = [];
+                state.notas.forEach(n => {
+                    n.items.forEach(item => {
+                        itemsData.push({
+                            "ID Nota": n.id,
+                            Pelanggan: n.customer,
+                            "Nama Item": item.name,
+                            Deskripsi: item.description,
+                            Qty: item.qty,
+                            Harga: item.price,
+                            Total: item.qty * item.price
+                        });
+                    });
+                });
+                const ws3 = XLSX.utils.json_to_sheet(itemsData);
+                XLSX.utils.book_append_sheet(wb, ws3, "Item Detail");
+                
+                XLSX.writeFile(wb, `Finanzo_Export_${new Date().toISOString().slice(0,10)}.xlsx`);
+                hideLoader();
+            }, 500);
         }
 
         function exportFullData() {
