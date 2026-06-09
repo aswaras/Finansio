@@ -122,12 +122,39 @@
                         <button onclick="toggleDateFilter()" class="p-2 text-gray-500 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full transition-colors"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i></button>
                         <button onclick="toggleExportMenu()" class="p-2 text-green-600 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 rounded-full transition-colors"><i data-lucide="sheet" class="w-4 h-4"></i></button>
                         
-                        <div id="export-menu" class="hidden absolute right-0 top-10 w-44 bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-gray-700 rounded-xl z-20 overflow-hidden">
+                        <div id="export-menu" class="hidden absolute right-0 top-10 w-48 bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-gray-700 rounded-xl z-20 overflow-hidden">
                             <button onclick="exportExcel('month')" class="w-full text-left px-4 py-3 text-xs border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200">Laporan Bulan Ini</button>
                             <button onclick="exportExcel('year')" class="w-full text-left px-4 py-3 text-xs border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200">Laporan Tahun Ini</button>
-                            <button onclick="exportExcel('filter')" class="w-full text-left px-4 py-3 text-xs font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700">Export Sesuai Tabel</button>
+                            <button onclick="toggleDateRangeExport()" class="w-full text-left px-4 py-3 text-xs font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700">Export Range Tanggal</button>
+                            <button onclick="exportExcel('filter')" class="w-full text-left px-4 py-3 text-xs border-t border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200">Export Sesuai Tabel</button>
                         </div>
                     </div>
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="glass-card p-3 rounded-xl text-center">
+                        <p class="text-[10px] text-gray-500 uppercase font-bold">Pemasukan</p>
+                        <p class="text-lg font-black text-green-600 mt-1" id="stat-masuk">Rp 0</p>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl text-center">
+                        <p class="text-[10px] text-gray-500 uppercase font-bold">Pengeluaran</p>
+                        <p class="text-lg font-black text-red-600 mt-1" id="stat-keluar">Rp 0</p>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl text-center">
+                        <p class="text-[10px] text-gray-500 uppercase font-bold">Saldo</p>
+                        <p class="text-lg font-black text-blue-600 mt-1" id="stat-saldo">Rp 0</p>
+                    </div>
+                </div>
+
+                <!-- Period Filter -->
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="setDateRange('all')" class="px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors" id="btn-filter-all">Semua</button>
+                    <button onclick="setDateRange('today')" class="px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors">Hari Ini</button>
+                    <button onclick="setDateRange('week')" class="px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors">1 Minggu</button>
+                    <button onclick="setDateRange('month')" class="px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors">1 Bulan</button>
+                    <button onclick="setDateRange('quarter')" class="px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors">3 Bulan</button>
+                    <button onclick="setDateRange('year')" class="px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors">1 Tahun</button>
                 </div>
 
                 <div id="search-container" class="hidden animate-slide-up">
@@ -438,20 +465,28 @@
         function hideLoader() { document.getElementById('global-loader').classList.add('hidden'); }
 
         async function loadData() {
-            showLoader("Menyinkronkan Data...");
+            // Tampilkan app langsung tanpa loading screen
+            document.getElementById('app').classList.remove('hidden');
+            
+            // Tampilkan loader kecil di background
+            document.getElementById('global-loader').classList.remove('hidden');
+            
             try {
                 if(!API_URL || API_URL === "URL_WEB_APP_ANDA_DISINI") {
                     console.warn("API Offline Mode.");
-                    loadLocal(); return;
+                    loadLocal();
+                } else {
+                    const res = await fetch(API_URL, { redirect: 'follow' });
+                    const result = await res.json();
+                    if(result.status === 'success' && result.data) state = result.data;
+                    else loadLocal();
                 }
-                const res = await fetch(API_URL, { redirect: 'follow' });
-                const result = await res.json();
-                if(result.status === 'success' && result.data) state = result.data;
-                else loadLocal();
             } catch(err) {
-                console.error(err); loadLocal();
+                console.error(err);
+                loadLocal();
             } finally {
-                refreshApp(); hideLoader(); document.getElementById('app').classList.remove('hidden');
+                refreshApp();
+                document.getElementById('global-loader').classList.add('hidden');
                 initPWA();
             }
         }
@@ -555,9 +590,62 @@
             });
             renderCatat();
         }
-        function toggleSearch() { document.getElementById('search-container').classList.toggle('hidden'); }
-        function toggleDateFilter() { document.getElementById('date-filter-container').classList.toggle('hidden'); renderCatat(); }
-        function toggleExportMenu() { document.getElementById('export-menu').classList.toggle('hidden'); }
+
+        let customDateStart = null;
+        let customDateEnd = null;
+
+        function setDateRange(range) {
+            const now = new Date();
+            const start = new Date();
+            
+            switch(range) {
+                case 'today':
+                    customDateStart = now.toISOString().slice(0, 10);
+                    customDateEnd = now.toISOString().slice(0, 10);
+                    break;
+                case 'week':
+                    start.setDate(now.getDate() - 7);
+                    customDateStart = start.toISOString().slice(0, 10);
+                    customDateEnd = now.toISOString().slice(0, 10);
+                    break;
+                case 'month':
+                    start.setMonth(now.getMonth() - 1);
+                    customDateStart = start.toISOString().slice(0, 10);
+                    customDateEnd = now.toISOString().slice(0, 10);
+                    break;
+                case 'quarter':
+                    start.setMonth(now.getMonth() - 3);
+                    customDateStart = start.toISOString().slice(0, 10);
+                    customDateEnd = now.toISOString().slice(0, 10);
+                    break;
+                case 'year':
+                    start.setFullYear(now.getFullYear() - 1);
+                    customDateStart = start.toISOString().slice(0, 10);
+                    customDateEnd = now.toISOString().slice(0, 10);
+                    break;
+                default:
+                    customDateStart = null;
+                    customDateEnd = null;
+            }
+            
+            document.getElementById('filter-date-start').value = customDateStart || '';
+            document.getElementById('filter-date-end').value = customDateEnd || '';
+            renderCatat();
+        }
+
+        function toggleDateRangeExport() {
+            const startDate = prompt('Dari Tanggal (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
+            if(!startDate) return;
+            const endDate = prompt('Sampai Tanggal (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
+            if(!endDate) return;
+            
+            const dataToExport = state.records.filter(r => r.date >= startDate && r.date <= endDate);
+            if(dataToExport.length === 0) return alert('Tidak ada data pada range tanggal ini.');
+            
+            const data = dataToExport.map(r => ({ ID: r.id, Tanggal: r.date, Tipe: r.type, Nominal: r.amount, Keterangan: r.note }));
+            const ws = XLSX.utils.json_to_sheet(data);
+            XLSX.writeFile(XLSX.utils.book_append_sheet(XLSX.utils.book_new(), ws, "Laporan"), `Laporan_${startDate}_${endDate}.xlsx`);
+        }
 
         function openCatatModal(id = null, defaultType = 'masuk') {
             document.getElementById('modal-catat').classList.remove('hidden');
@@ -818,11 +906,11 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="py-4 px-2">
                                     <p class="font-bold text-sm text-gray-800">${i.name}</p>
-                                    ${i.description ? `<p class="text-xs text-gray-500 italic mt-1">${i.description}</p>` : ''}
+                                    ${i.description ? `<p class="text-xs text-gray-500 mt-1">${i.description}</p>` : ''}
                                 </td>
                                 <td class="py-4 px-2 text-center text-sm font-semibold text-gray-800">${formatNumber(i.qty)}</td>
                                 <td class="py-4 px-2 text-right text-sm text-gray-800">Rp ${formatNumber(i.price)}</td>
-                                <td class="py-4 px-2 text-right text-sm font-bold text-blue-600">Rp ${formatNumber(i.qty * i.price)}</td>
+                                <td class="py-4 px-2 text-right text-sm font-bold text-gray-800">Rp ${formatNumber(i.qty * i.price)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -952,9 +1040,23 @@
             });
         }
 
+        function toggleSearch() { document.getElementById('search-container').classList.toggle('hidden'); }
+        function toggleDateFilter() { document.getElementById('date-filter-container').classList.toggle('hidden'); renderCatat(); }
+        function toggleExportMenu() { document.getElementById('export-menu').classList.toggle('hidden'); }
+
         function renderCatat() {
             const tbody = document.getElementById('table-catat-body');
             const filtered = getFilteredRecords();
+
+            // Update summary stats
+            const allFiltered = getFilteredRecords();
+            const masuk = allFiltered.filter(r => r.type === 'masuk').reduce((acc, curr) => acc + curr.amount, 0);
+            const keluar = allFiltered.filter(r => r.type === 'keluar').reduce((acc, curr) => acc + curr.amount, 0);
+            const saldo = masuk - keluar;
+            
+            document.getElementById('stat-masuk').innerText = `Rp ${formatNumber(masuk)}`;
+            document.getElementById('stat-keluar').innerText = `Rp ${formatNumber(keluar)}`;
+            document.getElementById('stat-saldo').innerText = `Rp ${formatNumber(saldo)}`;
 
             if(filtered.length === 0) {
                 tbody.innerHTML = `<tr><td class="text-center py-6 text-gray-400 text-xs italic">Data tidak ditemukan.</td></tr>`; return;
