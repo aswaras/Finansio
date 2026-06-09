@@ -462,13 +462,27 @@
         }
 
         async function saveDataToCloud() {
-            localStorage.setItem('finanzo_data', JSON.stringify(state)); // Fast local backup
+            // Simpan ke localStorage langsung (instant)
+            localStorage.setItem('finanzo_data', JSON.stringify(state));
+            
+            // Sync ke cloud di background (tidak blocking)
             if(!API_URL || API_URL === "URL_WEB_APP_ANDA_DISINI") return;
-            showLoader("Menyimpan ke Cloud...");
-            try {
-                await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(state) });
-            } catch(err) { console.error("Simpan cloud gagal:", err); } 
-            finally { hideLoader(); }
+            
+            // Tampilkan loader kecil
+            document.getElementById('global-loader').classList.remove('hidden');
+            
+            // Jalankan di background tanpa await (non-blocking)
+            fetch(API_URL, { 
+                method: 'POST', 
+                redirect: 'follow', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                body: JSON.stringify(state) 
+            }).then(() => {
+                document.getElementById('global-loader').classList.add('hidden');
+            }).catch(err => {
+                console.error("Simpan cloud gagal:", err);
+                document.getElementById('global-loader').classList.add('hidden');
+            });
         }
 
         // ==========================================
