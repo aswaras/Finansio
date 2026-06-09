@@ -38,9 +38,10 @@
 </head>
 <body class="bg-gray-50 min-h-screen pb-24 overflow-x-hidden">
 
-    <div id="global-loader" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex flex-col items-center justify-center text-white">
-        <i data-lucide="loader-2" class="w-10 h-10 animate-spin mb-4 text-blue-500"></i>
-        <p class="text-sm font-medium animate-pulse" id="loader-text">Menghubungkan ke Database...</p>
+    <div id="global-loader" class="fixed bottom-28 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col items-center justify-center text-white hidden">
+        <div class="bg-blue-600 rounded-full p-4 shadow-lg shadow-blue-400">
+            <i data-lucide="loader-2" class="w-6 h-6 animate-spin text-white"></i>
+        </div>
     </div>
 
     <div id="app" class="max-w-md mx-auto relative hidden">
@@ -348,19 +349,9 @@
                         </div>
                     </div>
 
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="border-b-2 border-gray-800 text-gray-800 text-sm uppercase tracking-wider">
-                                <th class="py-4 px-2 text-left w-1/2">Deskripsi Item</th>
-                                <th class="py-4 px-2 text-center">Qty</th>
-                                <th class="py-4 px-2 text-right">Harga</th>
-                                <th class="py-4 px-2 text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inv-table-body" class="text-gray-700 text-sm">
-                            <!-- Rows generated via JS -->
-                        </tbody>
-                    </table>
+                    <div id="inv-table-body" class="space-y-4">
+                        <!-- Items generated via JS -->
+                    </div>
 
                     <div class="mt-8 flex justify-end">
                         <div class="w-96 space-y-3">
@@ -419,7 +410,6 @@
         // 3. FETCH API & SYNC CLOUD
         // ==========================================
         function showLoader(text = "Memproses...") {
-            document.getElementById('loader-text').innerText = text;
             document.getElementById('global-loader').classList.remove('hidden');
         }
         function hideLoader() { document.getElementById('global-loader').classList.add('hidden'); }
@@ -605,7 +595,7 @@
                 document.getElementById('nota-dp').value = formatNumber(n.dp);
                 
                 container.innerHTML = '';
-                n.items.forEach(item => container.appendChild(createItemRow(item.name, formatNumber(item.qty), formatNumber(item.price))));
+                n.items.forEach(item => container.appendChild(createItemRow(item.name, item.description || '', formatNumber(item.qty), formatNumber(item.price))));
             } else {
                 document.getElementById('nota-modal-title').innerText = "Buat Nota Baru"; btnDel.classList.add('hidden');
                 document.getElementById('nota-id').value = ""; document.getElementById('nota-customer').value = "";
@@ -617,19 +607,48 @@
             calcNota();
         }
 
-        function createItemRow(name = '', qty = '', price = '') {
+        function createItemRow(name = '', description = '', qty = '', price = '') {
             const div = document.createElement('div');
-            div.className = "flex items-center gap-2 item-row animate-slide-up bg-gray-50 dark:bg-slate-800 p-2 rounded-xl border border-gray-100 dark:border-gray-700";
+            div.className = "item-row animate-slide-up bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700 space-y-2";
             div.innerHTML = `
-                <div class="flex-1 space-y-2">
-                    <input type="text" value="${name}" placeholder="Nama Item" class="w-full p-2 bg-white dark:bg-slate-900 rounded-lg text-xs outline-none border border-transparent focus:border-blue-500 i-name text-gray-800 dark:text-white">
-                    <div class="flex gap-2">
-                        <input type="text" inputmode="numeric" value="${qty}" placeholder="Qty" class="w-1/3 p-2 bg-white dark:bg-slate-900 rounded-lg text-xs outline-none border border-transparent focus:border-blue-500 i-qty text-gray-800 dark:text-white" oninput="formatRupiahRealtime(this); calcNota()">
-                        <input type="text" inputmode="numeric" value="${price}" placeholder="Harga" class="w-2/3 p-2 bg-white dark:bg-slate-900 rounded-lg text-xs outline-none border border-transparent focus:border-blue-500 i-price text-gray-800 dark:text-white" oninput="formatRupiahRealtime(this); calcNota()">
+                <div class="flex gap-2 items-start">
+                    <div class="flex-1 space-y-2">
+                        <input type="text" value="${name}" placeholder="Nama Item" class="w-full p-2 bg-white dark:bg-slate-900 rounded-lg text-xs outline-none border border-transparent focus:border-blue-500 i-name text-gray-800 dark:text-white">
+                        <input type="text" value="${description}" placeholder="Deskripsi Item" class="w-full p-2 bg-white dark:bg-slate-900 rounded-lg text-xs outline-none border border-transparent focus:border-blue-500 i-description text-gray-500 dark:text-gray-400 italic">
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove(); calcNota();" class="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors shrink-0 mt-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </div>
+                <div class="flex gap-2 bg-white dark:bg-slate-900 p-2 rounded-lg">
+                    <div class="flex-1">
+                        <label class="text-[9px] text-gray-400 uppercase font-bold mb-1 block">Qty</label>
+                        <input type="text" inputmode="numeric" value="${qty}" placeholder="0" class="w-full p-2 bg-gray-50 dark:bg-slate-800 rounded text-xs outline-none border border-transparent focus:border-blue-500 i-qty text-gray-800 dark:text-white font-semibold" oninput="formatRupiahRealtime(this); calcNota()">
+                    </div>
+                    <div class="flex-1">
+                        <label class="text-[9px] text-gray-400 uppercase font-bold mb-1 block">Harga</label>
+                        <input type="text" inputmode="numeric" value="${price}" placeholder="0" class="w-full p-2 bg-gray-50 dark:bg-slate-800 rounded text-xs outline-none border border-transparent focus:border-blue-500 i-price text-gray-800 dark:text-white font-semibold" oninput="formatRupiahRealtime(this); calcNota()">
+                    </div>
+                    <div class="flex-1 pt-5">
+                        <p class="text-xs font-bold text-gray-600 dark:text-gray-300">Total</p>
+                        <p class="text-sm font-black text-blue-600 i-total">Rp 0</p>
                     </div>
                 </div>
-                <button onclick="this.parentElement.remove(); calcNota();" class="p-3 text-red-500 hover:bg-red-100 rounded-xl transition-colors"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
             `;
+            
+            // Update total when qty/price changes
+            const qtyInput = div.querySelector('.i-qty');
+            const priceInput = div.querySelector('.i-price');
+            const totalDisplay = div.querySelector('.i-total');
+            
+            const updateTotal = () => {
+                const qty = cleanNumber(qtyInput.value);
+                const price = cleanNumber(priceInput.value);
+                totalDisplay.innerText = `Rp ${formatNumber(qty * price)}`;
+            };
+            
+            qtyInput.addEventListener('input', updateTotal);
+            priceInput.addEventListener('input', updateTotal);
+            updateTotal();
+            
             setTimeout(() => lucide.createIcons(), 10); return div;
         }
 
@@ -660,9 +679,10 @@
             const items = [];
             document.querySelectorAll('.item-row').forEach(row => {
                 const name = row.querySelector('.i-name').value;
+                const description = row.querySelector('.i-description').value;
                 const qty = cleanNumber(row.querySelector('.i-qty').value);
                 const price = cleanNumber(row.querySelector('.i-price').value);
-                if(name) items.push({ name, qty, price });
+                if(name) items.push({ name, description, qty, price });
             });
 
             const notaData = { id: id || ('INV-' + Date.now().toString().slice(-5)), customer, phone, date, deadline, items, dp, total };
@@ -743,12 +763,26 @@
 
             // Render Items
             document.getElementById('inv-table-body').innerHTML = n.items.map(i => `
-                <tr class="border-b border-gray-100">
-                    <td class="py-3 px-2 text-sm font-medium">${i.name}</td>
-                    <td class="py-3 px-2 text-center text-sm">${formatNumber(i.qty)}</td>
-                    <td class="py-3 px-2 text-right text-sm">Rp ${formatNumber(i.price)}</td>
-                    <td class="py-3 px-2 text-right font-bold text-sm text-gray-800">Rp ${formatNumber(i.qty * i.price)}</td>
-                </tr>
+                <div class="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-b-0">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm text-gray-800">${i.name}</p>
+                        ${i.description ? `<p class="text-xs text-gray-500 italic mt-1">${i.description}</p>` : ''}
+                    </div>
+                    <div class="text-right shrink-0 min-w-[120px]">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">Qty:</span>
+                            <span class="font-semibold text-gray-800">${formatNumber(i.qty)}</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">Harga:</span>
+                            <span class="font-semibold text-gray-800">Rp ${formatNumber(i.price)}</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-1 border-t border-gray-200">
+                            <span class="font-bold text-gray-800">Total:</span>
+                            <span class="font-black text-blue-600">Rp ${formatNumber(i.qty * i.price)}</span>
+                        </div>
+                    </div>
+                </div>
             `).join('');
 
             // Auto-fit to screen saat pertama kali dibuka
