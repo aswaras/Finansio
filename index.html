@@ -393,8 +393,9 @@
                                 <tr class="border-b-2 border-gray-800">
                                     <th class="py-3 px-2 text-left text-sm font-bold text-gray-800">Item & Deskripsi</th>
                                     <th class="py-3 px-2 text-center text-sm font-bold text-gray-800 w-12">Qty</th>
-                                    <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-24">Harga</th>
-                                    <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-24">Total</th>
+                                    <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-32 whitespace-nowrap">Harga</th>
+                                    <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-32 whitespace-nowrap">Total</th>
+
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
@@ -897,8 +898,8 @@
                         <tr class="border-b-2 border-gray-800">
                             <th class="py-3 px-2 text-left text-sm font-bold text-gray-800">Item & Deskripsi</th>
                             <th class="py-3 px-2 text-center text-sm font-bold text-gray-800 w-12">Qty</th>
-                            <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-24">Harga</th>
-                            <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-24">Total</th>
+                            <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-32 whitespace-nowrap">Harga</th>
+                            <th class="py-3 px-2 text-right text-sm font-bold text-gray-800 w-32 whitespace-nowrap">Total</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
@@ -909,13 +910,14 @@
                                     ${i.description ? `<p class="text-xs text-gray-500 mt-1">${i.description}</p>` : ''}
                                 </td>
                                 <td class="py-4 px-2 text-center text-sm font-semibold text-gray-800">${formatNumber(i.qty)}</td>
-                                <td class="py-4 px-2 text-right text-sm text-gray-800">Rp ${formatNumber(i.price)}</td>
-                                <td class="py-4 px-2 text-right text-sm font-bold text-gray-800">Rp ${formatNumber(i.qty * i.price)}</td>
+                                <td class="py-4 px-2 text-right text-sm text-gray-800 whitespace-nowrap">Rp ${formatNumber(i.price)}</td>
+                                <td class="py-4 px-2 text-right text-sm font-bold text-gray-800 whitespace-nowrap">Rp ${formatNumber(i.qty * i.price)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
                 </table>
             `;
+
 
             // Auto-fit to screen saat pertama kali dibuka
             setTimeout(() => setZoom('fit'), 50);
